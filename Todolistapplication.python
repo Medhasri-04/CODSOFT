@@ -1,0 +1,102 @@
+class Task:
+    def __init__(self, description):
+        self.description = description
+        self.completed = False
+
+    def mark_completed(self):
+        self.completed = True
+
+    def __str__(self):
+        status = "Done" if self.completed else "Not Done"
+        return f"{self.description} [{status}]"
+
+class ToDoList:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, description):
+        task = Task(description)
+        self.tasks.append(task)
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks to show.")
+        for i, task in enumerate(self.tasks, 1):
+            print(f"{i}. {task}")
+
+    def complete_task(self, index):
+        if 0 <= index < len(self.tasks):
+            self.tasks[index].mark_completed()
+        else:
+            print("Invalid task number.")
+
+    def delete_task(self, index):
+        if 0 <= index < len(self.tasks):
+            del self.tasks[index]
+        else:
+            print("Invalid task number.")
+
+    def save_tasks(self, filename="tasks.txt"):
+        with open(filename, 'w') as file:
+            for task in self.tasks:
+                file.write(f"{task.description}|{task.completed}\n")
+
+    def load_tasks(self, filename="tasks.txt"):
+        try:
+            with open(filename, 'r') as file:
+                self.tasks = []
+                for line in file:
+                    description, completed = line.strip().split('|')
+                    task = Task(description)
+                    if completed == 'True':
+                        task.mark_completed()
+                    self.tasks.append(task)
+        except FileNotFoundError:
+            print("No saved tasks found.")
+
+def print_menu():
+    print("\nTo-Do List Application")
+    print("1. Add a new task")
+    print("2. View all tasks")
+    print("3. Mark a task as completed")
+    print("4. Delete a task")
+    print("5. Save tasks")
+    print("6. Load tasks")
+    print("7. Exit")
+
+def main():
+    todo_list = ToDoList()
+
+    while True:
+        print_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            description = input("Enter the task description: ")
+            todo_list.add_task(description)
+        elif choice == '2':
+            todo_list.view_tasks()
+        elif choice == '3':
+            try:
+                index = int(input("Enter the task number to mark as completed: ")) - 1
+                todo_list.complete_task(index)
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+        elif choice == '4':
+            try:
+                index = int(input("Enter the task number to delete: ")) - 1
+                todo_list.delete_task(index)
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+        elif choice == '5':
+            todo_list.save_tasks()
+        elif choice == '6':
+            todo_list.load_tasks()
+        elif choice == '7':
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
